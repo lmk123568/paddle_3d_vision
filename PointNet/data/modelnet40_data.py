@@ -1,10 +1,11 @@
 import os
 import numpy as np
 
+import paddle
 from paddle.io import Dataset
 from paddle.io import DataLoader
 
-from point_aug import *
+from .point_aug import *
 
 class ModelNet40Dataset(Dataset):
     def __init__(
@@ -108,6 +109,7 @@ def get_dataset(file_folder, data='ModelNet40', mode='train', npoints=1024, use_
 
 def get_dataloader(dataset, batch_size=128, mode='train'):
     dataloader = DataLoader(dataset, batch_size=batch_size, num_workers=8, shuffle=(mode == 'train'))
+    print(f"----- {mode} batch size is {batch_size}")
     return dataloader 
 
 
@@ -120,5 +122,6 @@ if __name__ == "__main__":
     val_dataloader = get_dataloader(val_dataset, batch_size=128, mode='val')
 
     for point_set, label in train_dataloader:
-        print(point.shape)   # [B,1024, 6]
+        print(point_set.shape)   # [B,1024, 6]
         print(label.shape)   # [B,1]
+        break

@@ -6,7 +6,7 @@ import paddle.nn.functional as F
 
 
 class TNet(nn.Layer):
-    def __init__(self, k=64, channels=3):
+    def __init__(self, k=3, channels=3):
         super().__init__()
         self.conv1 = nn.Conv1D(channels, 64, 1)
         self.conv2 = nn.Conv1D(64, 128, 1)
@@ -46,25 +46,26 @@ class TNet(nn.Layer):
 
 class PointNetEncoder(nn.Layer):
     def __init__(
-        self, global_feat=True, input_transform=True, feature_transform=False, channel=3
+        self, global_feat=True, input_transform=True, feature_transform=False, channels=3
     ):
         super().__init__()
+        
 
         self.global_feat = global_feat
         if input_transform:
-            self.input_transfrom = TNet(k=channel)
+            self.input_transfrom = TNet(k=3, channels=channels)
         else:
             self.input_transfrom = lambda x: paddle.eye(
-                channel, channel, dtype=paddle.float32
+                channels, channels, dtype=paddle.float32
             )
 
-        self.conv1 = nn.Conv1D(channel, 64, 1)
+        self.conv1 = nn.Conv1D(channels, 64, 1)
         self.conv2 = nn.Conv1D(64, 64, 1)
         self.bn1 = nn.BatchNorm1D(64)
         self.bn2 = nn.BatchNorm1D(64)
 
         if feature_transform:
-            self.feature_transform = TNet(k=64)
+            self.feature_transform = TNet(k=64, channels=64)
         else:
             self.feature_transform = lambda x: paddle.eye(64, 64, dtype=paddle.float32)
 
@@ -85,7 +86,7 @@ class PointNetEncoder(nn.Layer):
             x = x[:, :, :3]
         x = paddle.bmm(x, trans_input)
         if D > 3:
-            x = paddle.cat([x, feature], dim=2)
+            x = paddle.concat([x, feature], axis=2)
         x = paddle.transpose(x, (0, 2, 1))
         x = F.relu(self.bn1(self.conv1(x)))
         x = F.relu(self.bn2(self.conv2(x)))
@@ -120,7 +121,7 @@ class PointNetCls(nn.Layer):
             global_feat=True,
             input_transform=True,
             feature_transform=True,
-            channel=channel,
+            channels=channels,
         )
         self.fc1 = nn.Linear(1024, 512)
         self.fc2 = nn.Linear(512, 256)

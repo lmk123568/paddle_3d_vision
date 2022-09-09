@@ -140,26 +140,27 @@ def get_val_transforms(point_set):
     return paddle.to_tensor(point_set)
 
 
-def get_dataset(file_folder, data='ShapeNet', npoints=2048, mode='train'):
+def get_dataset(file_folder, data='ShapeNet', npoints=2048, mode='train', use_normals=True):
 
     assert data in ['ShapeNet']
 
     if mode == 'train':
-        dataset = ShapeNetDataset(file_folder=file_folder, mode=mode, npoints=npoints, transform=get_train_transforms)
+        dataset = ShapeNetDataset(file_folder=file_folder, mode=mode, npoints=npoints, transform=get_train_transforms, use_normals=use_normals)
     else:
-        dataset = ShapeNetDataset(file_folder=file_folder, mode=mode, npoints=npoints, transform=get_val_transforms)
+        dataset = ShapeNetDataset(file_folder=file_folder, mode=mode, npoints=npoints, transform=get_val_transforms, use_normals=use_normals)
 
     return dataset
 
 
 def get_dataloader(dataset, batch_size=128, mode='train'):
     dataloader = DataLoader(dataset, batch_size=batch_size, num_workers=8, shuffle=(mode == 'train'))
+    print(f"----- {mode} batch size is {batch_size}")
     return dataloader
 
 
 if __name__ == "__main__":
     
-    file_folder = 'shapenetcore_partanno_segmentation_benchmark_v0_normal'
+    file_folder = 'data/shapenetcore_partanno_segmentation_benchmark_v0_normal'
     train_dataset = get_dataset(data='ShapeNet', file_folder=file_folder, mode='train')
     train_dataloader = get_dataloader(train_dataset, batch_size=32, mode='train')
     val_dataset = get_dataset(data='ShapeNet', file_folder=file_folder, mode='val')
@@ -169,5 +170,6 @@ if __name__ == "__main__":
         print(point_set.shape) # [B,2048,6]
         print(cls.shape)       # [B,1]
         print(seg.shape)       # [B,2048]
+        break
         
         

@@ -6,17 +6,17 @@ import paddle.nn as nn
 import paddle.nn.functional as F
 
 from utils import get_seed, get_logger, get_work_dir
-from modelnet_data import get_dataset, get_dataloader
+from data.modelnet40_data import get_dataset, get_dataloader
 from utils import AverageMeter
 from losses import ClsLoss
-from pointnet import PointNetClassifier
+from pointnet import PointNetCls
 
 
 # other
 seed = 42
 
 # data
-model40_folder = 'modelnet40_normal_resampled'
+modelnet40_folder = './modelnet40_normal_resampled'
 batch_size = 32
 use_normals = True
 
@@ -55,7 +55,7 @@ def train(dataloader,
         pred = F.softmax(pred, axis=1)
         acc1 = paddle.metric.accuracy(pred, label)
 
-        batch_size = point.shape[0]
+        batch_size = point_set.shape[0]
         train_loss_meter.update(loss.numpy()[0], batch_size)
         train_acc_meter.update(acc1.numpy()[0], batch_size)
 
@@ -114,7 +114,7 @@ def main():
     logger = get_logger(work_dir)
 
 	# step 1: create model
-    model = PointNetClassifier(use_normals=True)
+    model = PointNetCls(use_normals=True)
 
 	# setp 2: create train and val dataloader
     train_dataset = get_dataset(data='ModelNet40', file_folder=modelnet40_folder, npoints=1024, mode='train', use_normals=True)
@@ -139,7 +139,7 @@ def main():
     # step 6: start training and validation (train mode)
     for epoch in range(1, total_epochs+1):
     	# train
-        logger.info(f"----- Now training epoch {epoch}. LR={optimizer.get_lr():.6f} -----")
+        logger.info(f"----- Now training epoch {epoch} LR={optimizer.get_lr():.6f} -----")
         train_loss, train_acc, train_time = train(dataloader=train_dataloader,
                                                   model=model,
                                                   criterion=criterion,

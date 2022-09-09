@@ -17,7 +17,7 @@ from pointnet import PointNetPartSeg
 seed = 42
 
 # set data
-shapenet_folder = 'data/shapenetcore_partanno_segmentation_benchmark_v0_normal'
+shapenet_folder = './shapenetcore_partanno_segmentation_benchmark_v0_normal'
 batch_size = 16
 use_normals = True
 
@@ -105,7 +105,7 @@ def validate(dataloader, model, criterion, total_batch, logger=None):
         test_metrics['class_avg_accuracy'] = np.mean(
             np.array(total_correct_class) / np.array(total_seen_class, dtype=np.float))
         for cat in sorted(shape_ious.keys()):
-            logger('- eval mIoU of %s %f' % (cat + ' ' * (14 - len(cat)), shape_ious[cat]))
+            logger.info('- eval mIoU of %s %f' % (cat + ' ' * (14 - len(cat)), shape_ious[cat]))
         test_metrics['class_avg_iou'] = mean_shape_ious
         test_metrics['inctance_avg_iou'] = np.mean(all_shape_ious)
 
