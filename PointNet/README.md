@@ -1,6 +1,6 @@
 ## PointNet
 
-![teaser](C:\Users\Mike\Desktop\rep-pointnet\PointNet\misc\teaser.png)
+![pointnet](misc/pointnet.png)
 
 ### ModelNet40
 
@@ -8,7 +8,7 @@
 cd PointNet
 ```
 
-下载 modelnet40_normal_resampled 数据集
+下载 `modelnet40_normal_resampled` 数据集
 
 ```bash
 !unzip -oq ./modelnet40_normal_resampled.zip -d .
@@ -20,13 +20,20 @@ cd PointNet
 python train_cls.py
 ```
 
+| model    | Acc   |
+| -------- | ----- |
+| official | 89.2  |
+| **our**  | 89.14 |
+
+
+
 ### ShapeNet
 
 ```bash
 cd PointNet
 ```
 
-下载 modelnet40_normal_resampled 数据集
+下载 `modelnet40_normal_resampled` 数据集
 
 ```bash
 !unzip -oq ./shapenet.zip -d .
@@ -37,4 +44,9 @@ cd PointNet
 ```bash
 python train_partseg.py
 ```
+
+| *Model*  | *Instance avg IoU* | *Class avg IoU* |
+| -------- | ------------------ | --------------- |
+| official | 83.7               | 80.4            |
+| **our**  | **84.08**          | **80.07**       |
 
